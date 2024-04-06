@@ -6,11 +6,13 @@ SELECT column_name, data_type
 FROM information_schema.columns
 WHERE table_name = 'market_analysis';
 
+
 -- 2. Preliminary Data Sampling
 -- Display initial rows to preview dataset content
 SELECT *
 FROM market_analysis
 LIMIT 5;
+
 
 -- 3. Data Quality Assessment
 -- Identify missing values across columns to evaluate data completeness
@@ -19,6 +21,7 @@ SELECT
     COUNT(CASE WHEN nightly_rate IS NULL THEN 1 END) AS missing_nightly_rate,
     COUNT(CASE WHEN length_stay IS NULL THEN 1 END) AS missing_length_stay
 FROM market_analysis;
+
 
 -- 4. Null Value Resolution
 -- Substitute null entries with default value for data consistency
@@ -34,6 +37,7 @@ SELECT
     END AS lead_time_filled
 FROM market_analysis;
 
+
 -- 5. Duplicate Record Management
 -- Detect and eliminate duplicate records to ensure data integrity
 WITH duplicate_records AS (
@@ -47,6 +51,7 @@ WHERE unified_id IN (
     GROUP BY unified_id
     HAVING COUNT(row_number) > 1
 );
+
 
 --------------------------------------------------------------------
 -- 6. **Revenue Metrics**
@@ -79,15 +84,18 @@ INSERT INTO total_market_analysis (unified_id, date_month, city, host_type, reve
 SELECT unified_id, "month", city, host_type, revenue, openness , occupancy , nightly_rate , lead_time , length_stay 
 FROM all_market;
 
+
 -- 6-2. Total Revenue:
 SELECT SUM(revenue) AS total_revenue
 FROM total_market_analysis;
+
 
 -- 6-3. Average Monthly Revenue per Listing:
 SELECT TO_DATE(date_month, 'YYYY-MM') AS sales_date, SUM(revenue) / COUNT(unified_id) AS avg_revenue
 FROM total_market_analysis
 GROUP BY date_month
 ORDER BY sales_date;
+
 
 -- 6-4. Revenue Growth Rate per Month:
 WITH growth_rate AS (
@@ -112,7 +120,8 @@ SELECT
     END AS growth
 FROM 
     growth_rate;
-   
+
+
 -- 6-5. City Revenue per Month:
 SELECT city, TO_DATE(date_month, 'YYYY-MM') AS sales_date, SUM(revenue) AS revenue 
 FROM market_analysis ma
@@ -131,6 +140,7 @@ FROM total_market_analysis
 GROUP BY sales_date
 ORDER BY sales_date
 
+    
 -- 7-2. Average Length of Stay: 
 -- Mean duration of guest stays in nights.
 SELECT TO_DATE(date_month, 'YYYY-MM') AS sales_date , 
@@ -138,6 +148,7 @@ SUM(length_stay) / COUNT(*) AS Average_Length_Stay
 FROM total_market_analysis
 GROUP BY sales_date
 
+    
 -- 7-3. Occupancy Growth Rate:
 WITH occ_growth_rate AS (
 SELECT TO_DATE(date_month, 'YYYY-MM') AS sales_date, 
@@ -166,6 +177,7 @@ FROM total_market_analysis
 GROUP BY sales_date
 ORDER BY sales_date
 
+    
 -- 8-2. Rate of Price Change: 
 -- Percentage change in nightly rates compared to the previous month or year.
 WITH price_change AS (
@@ -194,6 +206,7 @@ FROM total_market_analysis
 GROUP BY sales_date
 ORDER BY sales_date
 
+    
 -- 9-2. Booking Window: 
 -- Distribution of lead times for bookings.
 
@@ -243,11 +256,13 @@ INSERT INTO amen_analysis (sales_date, total_sum, num_amenity, amenity)
 SELECT sales_date, total_sum, num_amenity, amenity
 FROM amen_analysis_data;
 
+
 -- 10-2. Most Revenue by Amenity:
 SELECT sales_date, total_sum, amenity, ROW_NUMBER() OVER (PARTITION BY sales_date ORDER BY total_sum DESC)
 FROM amen_analysis
 ORDER BY sales_date
 
+    
 -- 10-3. Frequency of Listings per Amenity:
 -- Proportion of listings offering amenities such as pools or hot tubs.
 WITH amn_percent AS(
