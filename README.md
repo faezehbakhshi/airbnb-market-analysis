@@ -15,8 +15,7 @@ This repository contains SQL scripts for extracting insights and key performance
 3. **Sales Properties:** Provides information about properties available for sale in the study areas, including separate files for overall sales properties and properties with pools in the Joshua Tree region.
 
 ## How to Use
-1. **Clone the Repository:** Clone this repository to your local machine using the following command:
-```git clone <repository_url>```
+1. **Clone the Repository:** Clone this repository to your local machine
 
 2. **Run the SQL Script:** Execute the SQL script provided in your preferred SQL environment (e.g., MySQL, PostgreSQL). Ensure that you have imported the dataset into your database before running the script.
 
